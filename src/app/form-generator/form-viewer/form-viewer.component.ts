@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGeneratorService, FormConfig, FormField } from '../form-generator.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormGeneratorService, FormConfig } from '../form-generator.service';
+import { FormBuilder, FormGroup, FormControl, Validators, ValidatorFn } from '@angular/forms';
+
+interface LengthError {
+  requiredLength: number;
+  actualLength: number;
+}
 
 @Component({
   selector: 'app-form-viewer',
@@ -35,19 +40,20 @@ export class FormViewerComponent implements OnInit {
   buildForm(): void {
     if (!this.selectedForm) return;
 
-    const group: any = {};
+    const group: Record<string, FormControl> = {};
+
     this.selectedForm.fields.forEach(field => {
-      const validators = [];
+      const validators: ValidatorFn[] = [];
 
       if (field.required) {
         validators.push(Validators.required);
       }
 
-      if (field.minLength) {
+      if (typeof field.minLength === 'number') {
         validators.push(Validators.minLength(field.minLength));
       }
 
-      if (field.maxLength) {
+      if (typeof field.maxLength === 'number') {
         validators.push(Validators.maxLength(field.maxLength));
       }
 
@@ -59,10 +65,10 @@ export class FormViewerComponent implements OnInit {
         validators.push(Validators.email);
       }
 
-      group[field.id] = ['', validators];
+      group[field.id] = new FormControl('', validators);
     });
 
-    this.form = this.fb.group(group);
+    this.form = new FormGroup(group);
   }
 
   onSubmit(): void {
@@ -70,7 +76,6 @@ export class FormViewerComponent implements OnInit {
 
     if (this.form.valid) {
       this.submissionData = this.form.value;
-      console.log('Form Data:', this.submissionData);
       alert('Form submitted successfully!');
     } else {
       alert('Please fill in all required fields correctly');
@@ -87,23 +92,27 @@ export class FormViewerComponent implements OnInit {
     const control = this.form.get(fieldId);
     const field = this.selectedForm?.fields.find(f => f.id === fieldId);
 
-    if (!control || !control.errors || !this.submitted) {
-      return '';
-    }
+    if (!control || !this.submitted) return '';
 
-    if (control.errors['required']) {
+    if (control.hasError('required')) {
       return `${field?.label} is required`;
     }
-    if (control.errors['minlength']) {
-      return `${field?.label} must be at least ${control.errors['minlength'].requiredLength} characters`;
+
+    const minErr = control.getError('minlength') as LengthError | null;
+    if (minErr) {
+      return `${field?.label} must be at least ${minErr.requiredLength} characters`;
     }
-    if (control.errors['maxlength']) {
-      return `${field?.label} must not exceed ${control.errors['maxlength'].requiredLength} characters`;
+
+    const maxErr = control.getError('maxlength') as LengthError | null;
+    if (maxErr) {
+      return `${field?.label} must not exceed ${maxErr.requiredLength} characters`;
     }
-    if (control.errors['email']) {
+
+    if (control.hasError('email')) {
       return `${field?.label} must be a valid email address`;
     }
-    if (control.errors['pattern']) {
+
+    if (control.hasError('pattern')) {
       return `${field?.label} format is invalid`;
     }
 

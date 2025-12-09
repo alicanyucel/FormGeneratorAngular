@@ -1,22 +1,242 @@
+/* Container */
+.container-fluid {
+  padding: 0;
+}
+
+/* Header */
+h1.display-5 {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  letter-spacing: 1px;
+}
+
+/* Cards */
+.card {
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1.25rem;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Form List */
+.list-group {
+  gap: 0.5rem;
+}
+
+.list-group-item {
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+  background-color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.list-group-item:hover {
+  background-color: #f8f9fa;
+  transform: translateX(4px);
+}
+
+.list-group-item h6 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.list-group-item small {
+  font-size: 0.8rem;
+}
+
+/* Form Controls */
+.form-control,
+.form-select,
+textarea {
+  border: 1.5px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  outline: none;
+}
+
 .form-control.is-invalid,
-.form-select.is-invalid {
+.form-select.is-invalid,
+textarea.is-invalid {
   border-color: #dc3545;
 }
 
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus,
+textarea.is-invalid:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+}
+
+/* Labels */
+label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+/* Error Messages */
 .invalid-feedback {
   color: #dc3545;
-  font-size: 0.875em;
-  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
+  display: block;
+  font-weight: 500;
 }
 
+/* Checkboxes & Radios */
 .form-check {
   margin-bottom: 1rem;
+  padding: 0.5rem 0;
 }
 
-pre {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
+.form-check-input {
+  width: 1.2em;
+  height: 1.2em;
+  margin-top: 0.25em;
+  cursor: pointer;
+  border: 1.5px solid #e0e0e0;
   border-radius: 4px;
-  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-check-input:checked {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.form-check-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.form-check-input.is-invalid {
+  border-color: #dc3545;
+}
+
+.form-check-label {
+  cursor: pointer;
+  font-weight: 500;
+  margin-left: 0.5rem;
+  user-select: none;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 6px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-light {
+  background-color: #f8f9fa;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.btn-light:hover {
+  background-color: #e9ecef;
+  transform: translateY(-2px);
+}
+
+/* Alerts */
+.alert {
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+  padding: 1.25rem;
+}
+
+/* Submission Data Display */
+.submission-data {
+  background-color: #f0f4ff;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.submission-data h6 {
+  color: #667eea;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.submission-data pre {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1.25rem;
   overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Help Text */
+.form-text.text-muted {
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .col-lg-3,
+  .col-lg-9 {
+    margin-bottom: 1rem;
+  }
+
+  h1.display-5 {
+    font-size: 2rem;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .form-control,
+  .form-select,
+  textarea {
+    font-size: 1rem; /* Prevents zoom on mobile */
+  }
 }

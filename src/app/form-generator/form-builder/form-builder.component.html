@@ -1,69 +1,80 @@
-<div class="container mt-5">
-  <div class="row">
-    <!-- Form List -->
-    <div class="col-md-4">
-      <div class="card">
-        <div class="card-header bg-primary text-white">
-          <h5 class="mb-0">Your Forms</h5>
+<div class="container-fluid py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh;">
+  <div class="container">
+    <!-- Header -->
+    <div class="mb-5 text-white">
+      <h1 class="display-5 fw-bold mb-2">📋 Form Oluşturucu</h1>
+      <p class="lead">Kod yazmadan formlarınızı oluşturun, yönetin ve özelleştirin</p>
+    </div>
+
+  <div class="row g-4">
+    <!-- Form List Sidebar -->
+    <div class="col-lg-3">
+      <div class="card h-100 border-0 shadow-lg" style="border-top: 4px solid #667eea;">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="mb-0 fw-bold">📝 Formlarınız</h5>
         </div>
         <div class="card-body">
-          <button class="btn btn-success btn-sm mb-3 w-100" (click)="isCreatingForm = true">
-            + New Form
+          <button class="btn btn-gradient fw-bold mb-3 w-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white;" (click)="isCreatingForm = true">
+            <i class="fas fa-plus"></i> Yeni Form
           </button>
 
-          <div *ngIf="isCreatingForm" class="alert alert-info p-2">
-            <input type="text" class="form-control form-control-sm mb-2" placeholder="Form Name"
+          <div *ngIf="isCreatingForm" class="alert" style="background-color: #e3f2fd; border: 2px solid #667eea; border-radius: 8px; padding: 1rem;">
+            <input type="text" class="form-control form-control-sm mb-4" placeholder="Form Adı"
               [(ngModel)]="newFormData.name">
-            <input type="text" class="form-control form-control-sm mb-2" placeholder="Form Title"
+            <input type="text" class="form-control form-control-sm mb-4" placeholder="Form Başlığı"
               [(ngModel)]="newFormData.title">
-            <textarea class="form-control form-control-sm mb-2" placeholder="Description" rows="2"
-              [(ngModel)]="newFormData.description"></textarea>
-            <button class="btn btn-sm btn-success me-2" (click)="createNewForm()">Create</button>
-            <button class="btn btn-sm btn-secondary" (click)="isCreatingForm = false">Cancel</button>
+            <input type="text" class="form-control form-control-sm mb-4" placeholder="Açıklama"
+              [(ngModel)]="newFormData.description">
+            <button class="btn btn-sm fw-bold me-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white;" (click)="createNewForm()">✓ Oluştur</button>
+            <button class="btn btn-sm btn-light border" (click)="isCreatingForm = false">✕ İptal</button>
           </div>
 
-          <div class="list-group">
+          <div class="list-group list-group-flush">
             <button *ngFor="let form of forms"
-              class="list-group-item list-group-item-action"
-              [class.active]="currentForm?.id === form.id"
+              class="list-group-item list-group-item-action border-0 py-3"
+              [ngClass]="{'border-start': currentForm?.id === form.id, 'border-start-4': currentForm?.id === form.id}"
+              [style.border-left]="currentForm?.id === form.id ? '4px solid #667eea' : '4px solid transparent'"
+              [style.background-color]="currentForm?.id === form.id ? '#f0f4ff' : 'white'"
               (click)="loadForm(form)">
               <div class="d-flex justify-content-between align-items-start">
                 <div class="flex-grow-1">
-                  <h6 class="mb-1">{{ form.name }}</h6>
-                  <small class="text-muted">{{ form.fields.length }} fields</small>
+                  <h6 class="mb-1 fw-bold">{{ form.name }}</h6>
+                  <small class="text-muted">{{ form.fields.length }} alan<span *ngIf="form.fields.length !== 1">lar</span></small>
                 </div>
-                <button class="btn btn-sm btn-danger" (click)="deleteForm(form.id); $event.stopPropagation()">
-                  ✕
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteForm(form.id); $event.stopPropagation()" title="Formu sil">
+                  🗑️
                 </button>
               </div>
             </button>
           </div>
-        </div>
+          <div *ngIf="forms.length === 0" class="alert mt-3 mb-0" style="background-color: #f5f5f5; border: 1px dashed #999;">
+            <small class="text-muted">Henüz form yok. Başlamak için bir tane oluşturun!</small>
+          </div>
       </div>
     </div>
 
     <!-- Form Builder -->
-    <div class="col-md-8" *ngIf="currentForm">
-      <div class="card">
-        <div class="card-header bg-info text-white">
-          <h5 class="mb-0">{{ currentForm.title }} - Builder</h5>
+    <div class="col-lg-9" *ngIf="currentForm">
+      <div class="card border-0 shadow-lg" style="border-top: 4px solid #764ba2;">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="mb-0 fw-bold">✏️ {{ currentForm.title }} - Oluşturucu</h5>
         </div>
         <div class="card-body">
           <!-- Form Settings -->
-          <div class="mb-4">
-            <h6>Form Settings</h6>
+          <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+            <h6 class="fw-bold mb-3">⚙️ Form Ayarları</h6>
             <div class="row">
               <div class="col-md-6">
-                <label class="form-label">Form Title</label>
-                <input type="text" class="form-control" [(ngModel)]="currentForm.title">
+                <label class="form-label">Form Başlığı</label>
+                <input type="text" class="form-control mb-4" [(ngModel)]="currentForm.title">
               </div>
               <div class="col-md-6">
-                <label class="form-label">Submit Button Text</label>
-                <input type="text" class="form-control" [(ngModel)]="currentForm.submitButtonText">
+                <label class="form-label">Gönder Butonu Metni</label>
+                <input type="text" class="form-control mb-4" [(ngModel)]="currentForm.submitButtonText">
               </div>
-              <div class="col-12 mt-2">
-                <label class="form-label">Description</label>
-                <textarea class="form-control" rows="2" [(ngModel)]="currentForm.description"></textarea>
+              <div class="col-12">
+                <label class="form-label">Açıklama</label>
+                <input type="text" class="form-control" [(ngModel)]="currentForm.description">
               </div>
             </div>
           </div>
@@ -72,42 +83,42 @@
 
           <!-- Fields Section -->
           <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h6>Form Fields</h6>
-              <button class="btn btn-primary btn-sm" (click)="addNewField()">+ Add Field</button>
+            <div class="d-flex justify-content-between align-items-center mb-3 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+              <h6 class="fw-bold mb-0">📋 Form Alanları</h6>
+              <button class="btn btn-sm fw-bold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white;" (click)="addNewField()"><i class="fas fa-plus"></i> Alan Ekle</button>
             </div>
 
             <!-- Field List -->
             <div class="field-list" *ngIf="currentForm.fields.length > 0">
-              <div *ngFor="let field of currentForm.fields; let i = index" class="field-item card mb-2 p-3">
+              <div *ngFor="let field of currentForm.fields; let i = index" class="field-item card mb-2 p-3 border-0 shadow-sm" style="background-color: #fafafa; border-left: 4px solid #667eea !important;">
                 <div class="d-flex justify-content-between align-items-start">
                   <div class="flex-grow-1">
-                    <strong>{{ field.label }}</strong>
+                    <strong class="fs-6">{{ field.label }}</strong>
                     <small class="d-block text-muted">{{ field.type }}
-                      <span *ngIf="field.required" class="badge bg-danger">Required</span>
+                      <span *ngIf="field.required" class="badge" style="background-color: #667eea;">Zorunlu</span>
                     </small>
                   </div>
-                  <div class="btn-group">
-                    <button class="btn btn-sm btn-info" (click)="moveFieldUp(i)" [disabled]="i === 0" title="Move Up">↑</button>
-                    <button class="btn btn-sm btn-info" (click)="moveFieldDown(i)" [disabled]="i === currentForm.fields.length - 1" title="Move Down">↓</button>
-                    <button class="btn btn-sm btn-warning" (click)="editField(field, i)">Edit</button>
-                    <button class="btn btn-sm btn-danger" (click)="deleteField(i)">Delete</button>
+                  <div class="btn-group" role="group">
+                    <button class="btn btn-sm btn-light" [disabled]="i === 0" (click)="moveFieldUp(i)" title="Yukarı Taşı" [class.disabled]="i === 0" style="color: #667eea; border: 1px solid #ddd;">↑</button>
+                    <button class="btn btn-sm btn-light" [disabled]="i === currentForm.fields.length - 1" (click)="moveFieldDown(i)" title="Aşağı Taşı" [class.disabled]="i === currentForm.fields.length - 1" style="color: #667eea; border: 1px solid #ddd;">↓</button>
+                    <button class="btn btn-sm btn-light" (click)="editField(field, i)" style="color: #764ba2; border: 1px solid #ddd;">✏️ Düzenle</button>
+                    <button class="btn btn-sm btn-light" (click)="deleteField(i)" style="color: #dc3545; border: 1px solid #ddd;">🗑️ Sil</button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div *ngIf="currentForm.fields.length === 0" class="alert alert-secondary">
-              No fields added yet. Click "Add Field" to start building your form.
+            <div *ngIf="currentForm.fields.length === 0" class="alert" style="background-color: #f0f4ff; border: 2px dashed #667eea; border-radius: 8px;">
+              <small>Henüz alan eklenmedi. "Alan Ekle" düğmesine tıklayarak form oluşturmaya başlayın.</small>
             </div>
           </div>
 
           <!-- Action Buttons -->
-          <div class="d-flex gap-2">
-            <button class="btn btn-success" (click)="saveCurrentForm()">💾 Save Form</button>
-            <button class="btn btn-info" (click)="exportForm()">📥 Export as JSON</button>
-            <label class="btn btn-warning">
-              📤 Import from JSON
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn fw-bold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;" (click)="saveCurrentForm()">💾 Formu Kaydet</button>
+            <button class="btn btn-light border fw-bold" style="color: #667eea;" (click)="exportForm()">📥 JSON İndir</button>
+            <label class="btn btn-light border fw-bold" style="color: #764ba2; cursor: pointer; margin: 0;">
+              📤 JSON Yükle
               <input type="file" accept=".json" (change)="importForm($event)" hidden>
             </label>
           </div>
@@ -115,66 +126,67 @@
       </div>
     </div>
 
-    <div class="col-md-8" *ngIf="!currentForm" class="mt-4">
-      <div class="alert alert-secondary text-center">
-        <h5>Select a form or create a new one to start building</h5>
+    <div class="col-lg-9" *ngIf="!currentForm" class="mt-4">
+      <div class="alert text-center p-5" style="background-color: #f0f4ff; border: 2px dashed #667eea; border-radius: 12px;">
+        <h5 class="fw-bold" style="color: #667eea;">👉 Oluşturmaya başlamak için bir form seçin veya yeni bir form oluşturun</h5>
       </div>
     </div>
+  </div>
   </div>
 
   <!-- Field Editor Modal -->
   <div class="modal show" [class.d-block]="showFieldEditor" [class.d-none]="!showFieldEditor"
-    [style.display]="showFieldEditor ? 'block' : 'none'" style="background: rgba(0,0,0,0.5);">
+    [style.display]="showFieldEditor ? 'block' : 'none'" [style.background]="showFieldEditor ? 'rgba(0,0,0,0.5)' : 'none'">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ editingFieldIndex > -1 ? 'Edit' : 'Add' }} Field</h5>
-          <button type="button" class="btn-close" (click)="closeFieldEditor()"></button>
+        <div class="modal-header border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <h5 class="modal-title fw-bold text-white">{{ editingFieldIndex > -1 ? '✏️ Düzenle' : '➕ Ekle' }} Alan</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="closeFieldEditor()"></button>
         </div>
         <div class="modal-body" *ngIf="selectedField">
           <div class="mb-3">
-            <label class="form-label">Field Label *</label>
-            <input type="text" class="form-control" [(ngModel)]="selectedField.label" placeholder="e.g., Email Address">
+            <label class="form-label">Alan Etiketi *</label>
+            <input type="text" class="form-control" [(ngModel)]="selectedField.label" placeholder="örn. E-posta Adresi">
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Field Type</label>
+            <label class="form-label">Alan Tipi</label>
             <select class="form-select" [(ngModel)]="selectedField.type">
               <option *ngFor="let type of fieldTypes" [value]="type">{{ type }}</option>
             </select>
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Placeholder</label>
+            <label class="form-label">Yer Tutucu Metni</label>
             <input type="text" class="form-control" [(ngModel)]="selectedField.placeholder"
-              placeholder="Enter placeholder text">
+              placeholder="Yer tutucu metni girin">
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Help Text</label>
+            <label class="form-label">Yardım Metni</label>
             <input type="text" class="form-control" [(ngModel)]="selectedField.helpText"
-              placeholder="Additional help text for users">
+              placeholder="Kullanıcılar için ek yardım metni">
           </div>
 
           <!-- Options for select/radio -->
           <div *ngIf="selectedField.type === 'select' || selectedField.type === 'radio'" class="mb-3">
-            <label class="form-label">Options</label>
+            <label class="form-label">Seçenekler</label>
             <div *ngFor="let option of selectedField.options; let i = index" class="input-group mb-2">
               <input type="text" class="form-control" [(ngModel)]="selectedField.options![i]"
-                placeholder="Option value">
-              <button class="btn btn-danger" type="button" (click)="removeOption(i)">Remove</button>
+                placeholder="Seçenek değeri">
+              <button class="btn btn-danger" type="button" (click)="removeOption(i)">Kaldır</button>
             </div>
-            <button class="btn btn-secondary btn-sm" (click)="addOption()">+ Add Option</button>
+            <button class="btn btn-secondary btn-sm" (click)="addOption()">+ Seçenek Ekle</button>
           </div>
 
           <!-- Length constraints -->
           <div class="row mb-3">
             <div class="col-md-6">
-              <label class="form-label">Min Length</label>
+              <label class="form-label">Min Uzunluk</label>
               <input type="number" class="form-control" [(ngModel)]="selectedField.minLength">
             </div>
             <div class="col-md-6">
-              <label class="form-label">Max Length</label>
+              <label class="form-label">Max Uzunluk</label>
               <input type="number" class="form-control" [(ngModel)]="selectedField.maxLength">
             </div>
           </div>
@@ -183,20 +195,20 @@
           <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" [(ngModel)]="selectedField.required" id="requiredCheck">
             <label class="form-check-label" for="requiredCheck">
-              Required Field
+              Zorunlu Alan
             </label>
           </div>
 
           <!-- Validation -->
           <div class="mb-3">
-            <label class="form-label">Validation Pattern (Regex)</label>
+            <label class="form-label">Doğrulama Deseni (Regex)</label>
             <input type="text" class="form-control" [(ngModel)]="selectedField.validation"
-              placeholder="e.g., ^[A-Z].*">
+              placeholder="örn. ^[A-Z].*">
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeFieldEditor()">Cancel</button>
-          <button type="button" class="btn btn-primary" (click)="saveField()">Save Field</button>
+        <div class="modal-footer border-top">
+          <button type="button" class="btn btn-light">✕ İptal</button>
+          <button type="button" class="btn fw-bold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;" (click)="saveField()">✓ Alanı Kaydet</button>
         </div>
       </div>
     </div>

@@ -1,143 +1,152 @@
-<div class="container mt-5">
-  <div class="row">
-    <!-- Form List -->
-    <div class="col-md-3">
-      <div class="card">
-        <div class="card-header bg-primary text-white">
-          <h5 class="mb-0">Available Forms</h5>
-        </div>
-        <div class="card-body">
-          <div class="list-group">
-            <button *ngFor="let form of forms"
-              class="list-group-item list-group-item-action"
-              [class.active]="selectedForm?.id === form.id"
-              (click)="loadForm(form)">
-              <h6 class="mb-0">{{ form.title }}</h6>
-              <small class="text-muted">{{ form.fields.length }} fields</small>
-            </button>
+<div class="container-fluid py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh;">
+  <div class="container">
+    <!-- Header -->
+    <div class="mb-5 text-white">
+      <h1 class="display-5 fw-bold mb-2">📝 Form Görüntüleyici</h1>
+      <p class="lead">Bir formu seçin ve doldumaya başlayın</p>
+    </div>
+
+    <div class="row g-4">
+      <!-- Form List -->
+      <div class="col-lg-3">
+        <div class="card h-100 border-0 shadow-lg" style="border-top: 4px solid #667eea;">
+          <div class="card-header bg-white border-bottom">
+            <h5 class="mb-0 fw-bold">📋 Mevcut Formlar</h5>
           </div>
-          <div *ngIf="forms.length === 0" class="alert alert-secondary mt-3 mb-0">
-            No forms available. Create one in the builder.
+          <div class="card-body">
+            <div class="list-group list-group-flush">
+              <button *ngFor="let form of forms"
+                class="list-group-item list-group-item-action border-0 py-3"
+                [style.border-left]="selectedForm?.id === form.id ? '4px solid #667eea' : '4px solid transparent'"
+                [style.background-color]="selectedForm?.id === form.id ? '#f0f4ff' : 'white'"
+                (click)="loadForm(form)">
+                <h6 class="mb-1 fw-bold">{{ form.title }}</h6>
+                <small class="text-muted">{{ form.fields.length }} alan<span *ngIf="form.fields.length !== 1">lar</span></small>
+              </button>
+            </div>
+            <div *ngIf="forms.length === 0" class="alert mt-3 mb-0" style="background-color: #f5f5f5; border: 1px dashed #999;">
+              <small class="text-muted">Kullanılabilir form yok. Builder'da bir tane oluşturun.</small>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Form Viewer -->
-    <div class="col-md-9" *ngIf="selectedForm">
-      <div class="card">
-        <div class="card-header bg-info text-white">
-          <h5 class="mb-0">{{ selectedForm.title }}</h5>
-          <p class="mb-0" *ngIf="selectedForm.description">
-            <small>{{ selectedForm.description }}</small>
-          </p>
-        </div>
-        <div class="card-body">
-          <form [formGroup]="form" (ngSubmit)="onSubmit()">
-            <!-- Dynamic Fields -->
-            <div *ngFor="let field of selectedForm.fields" class="mb-4">
-              <label [for]="field.id" class="form-label">
-                {{ field.label }}
-                <span *ngIf="field.required" class="text-danger">*</span>
-              </label>
+      <!-- Form Viewer -->
+      <div class="col-lg-9" *ngIf="selectedForm">
+        <div class="card border-0 shadow-lg" style="border-top: 4px solid #764ba2;">
+          <div class="card-header bg-white border-bottom">
+            <h5 class="mb-0 fw-bold">✏️ {{ selectedForm.title }}</h5>
+            <p class="text-muted small mt-1 mb-0">{{ selectedForm.description }}</p>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
+              <div *ngFor="let field of selectedForm.fields" class="mb-4">
+                <label [for]="field.id" class="form-label fw-bold">
+                  {{ field.label }}
+                  <span *ngIf="field.required" class="text-danger">*</span>
+                </label>
 
-              <!-- Text, Email, Password, Number Input -->
-              <input *ngIf="['text', 'email', 'password', 'number', 'date'].includes(field.type)"
-                [type]="field.type"
-                class="form-control"
-                [class.is-invalid]="isFieldInvalid(field.id)"
-                [id]="field.id"
-                [placeholder]="field.placeholder || ''"
-                [formControlName]="field.id"
-                [minlength]="field.minLength || null"
-                [maxlength]="field.maxLength || null">
+                <!-- Text, Email, Password, Number, Date Input -->
+                <!-- cspell: disable-next-line -->
+                <input *ngIf="['text', 'email', 'password', 'number', 'date'].includes(field.type)"
+                  [type]="field.type"
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid(field.id)"
+                  [id]="field.id"
+                  [placeholder]="field.placeholder || ''"
+                  [formControlName]="field.id"
+                  [minlength]="field.minLength || null"
+                  [maxlength]="field.maxLength || null">
 
-              <!-- Textarea -->
-              <textarea *ngIf="field.type === 'textarea'"
-                class="form-control"
-                [class.is-invalid]="isFieldInvalid(field.id)"
-                [id]="field.id"
-                [placeholder]="field.placeholder || ''"
-                [formControlName]="field.id"
-                rows="4"></textarea>
+                <!-- Textarea -->
+                <textarea *ngIf="field.type === 'textarea'"
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid(field.id)"
+                  [id]="field.id"
+                  [placeholder]="field.placeholder || ''"
+                  [formControlName]="field.id"
+                  rows="4"></textarea>
 
-              <!-- File Input -->
-              <input *ngIf="field.type === 'file'"
-                type="file"
-                class="form-control"
-                [class.is-invalid]="isFieldInvalid(field.id)"
-                [id]="field.id"
-                [formControlName]="field.id">
-
-              <!-- Checkbox -->
-              <div *ngIf="field.type === 'checkbox'" class="form-check">
-                <input type="checkbox"
-                  class="form-check-input"
+                <!-- File Input -->
+                <input *ngIf="field.type === 'file'"
+                  type="file"
+                  class="form-control"
                   [class.is-invalid]="isFieldInvalid(field.id)"
                   [id]="field.id"
                   [formControlName]="field.id">
-              </div>
 
-              <!-- Radio Buttons -->
-              <div *ngIf="field.type === 'radio'" class="form-check">
-                <div *ngFor="let option of field.options" class="form-check">
-                  <input type="radio"
+                <!-- Checkbox -->
+                <div *ngIf="field.type === 'checkbox'" class="form-check">
+                  <input type="checkbox"
                     class="form-check-input"
-                    [id]="field.id + '_' + option"
-                    [value]="option"
+                    [class.is-invalid]="isFieldInvalid(field.id)"
+                    [id]="field.id"
                     [formControlName]="field.id">
-                  <label class="form-check-label" [for]="field.id + '_' + option">
+                </div>
+
+                <!-- Radio Buttons -->
+                <div *ngIf="field.type === 'radio'" class="form-check">
+                  <div *ngFor="let option of field.options" class="form-check">
+                    <input type="radio"
+                      class="form-check-input"
+                      [id]="field.id + '_' + option"
+                      [value]="option"
+                      [formControlName]="field.id">
+                    <label class="form-check-label" [for]="field.id + '_' + option">
+                      {{ option }}
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Select Dropdown -->
+                <select *ngIf="field.type === 'select'"
+                  class="form-select"
+                  [class.is-invalid]="isFieldInvalid(field.id)"
+                  [id]="field.id"
+                  [formControlName]="field.id">
+                  <option value="">-- Select {{ field.label }} --</option>
+                  <option *ngFor="let option of field.options" [value]="option">
                     {{ option }}
-                  </label>
+                  </option>
+                </select>
+
+                <!-- Help Text -->
+                <small *ngIf="field.helpText" class="form-text text-muted d-block mt-2">
+                  {{ field.helpText }}
+                </small>
+
+                <!-- Error Message -->
+                <div *ngIf="isFieldInvalid(field.id)" class="invalid-feedback d-block">
+                  {{ getFieldError(field.id) }}
                 </div>
               </div>
 
-              <!-- Select Dropdown -->
-              <select *ngIf="field.type === 'select'"
-                class="form-select"
-                [class.is-invalid]="isFieldInvalid(field.id)"
-                [id]="field.id"
-                [formControlName]="field.id">
-                <option value="">-- Select {{ field.label }} --</option>
-                <option *ngFor="let option of field.options" [value]="option">
-                  {{ option }}
-                </option>
-              </select>
-
-              <!-- Help Text -->
-              <small *ngIf="field.helpText" class="form-text text-muted d-block mt-2">
-                {{ field.helpText }}
-              </small>
-
-              <!-- Error Message -->
-              <div *ngIf="isFieldInvalid(field.id)" class="invalid-feedback d-block">
-                {{ getFieldError(field.id) }}
+              <!-- Form Actions -->
+              <div class="d-flex gap-2 flex-wrap mt-5">
+                <button type="submit" class="btn fw-bold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                  ✓ {{ selectedForm.submitButtonText || 'Submit' }}
+                </button>
+                <button type="button" class="btn btn-light border fw-bold" style="color: #667eea;" (click)="reset()">
+                  🔄 Reset
+                </button>
               </div>
-            </div>
+            </form>
 
-            <!-- Submission Data (if submitted) -->
-            <div *ngIf="submissionData" class="alert alert-success mt-4">
-              <h5>Form Data Submitted</h5>
-              <pre>{{ submissionData | json }}</pre>
+            <!-- Submission Data Display -->
+            <div *ngIf="submissionData" class="submission-data mt-5" style="background-color: #f0f4ff; border: 2px solid #667eea; border-radius: 8px; padding: 1.5rem;">
+              <h6 class="fw-bold" style="color: #667eea;">✓ Form Submitted Successfully!</h6>
+              <p class="text-muted small mb-3">Here's the data you submitted:</p>
+              <pre style="background-color: white; border: 1px solid #ddd; border-radius: 6px; padding: 1rem;">{{ submissionData | json }}</pre>
             </div>
-
-            <!-- Action Buttons -->
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-primary">
-                {{ selectedForm.submitButtonText }}
-              </button>
-              <button type="button" class="btn btn-secondary" (click)="reset()">
-                Reset
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="col-md-9" *ngIf="!selectedForm">
-      <div class="alert alert-secondary text-center mt-4">
-        <h5>Select a form to view and fill it</h5>
+      <!-- Empty State -->
+      <div class="col-lg-9" *ngIf="!selectedForm">
+        <div class="alert text-center p-5" style="background-color: #f0f4ff; border: 2px dashed #667eea; border-radius: 12px;">
+          <h5 class="fw-bold" style="color: #667eea;">👉 Select a form to view and fill it</h5>
+        </div>
       </div>
     </div>
   </div>
