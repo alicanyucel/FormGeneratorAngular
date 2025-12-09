@@ -1,0 +1,26 @@
+<div class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" routerLink="/form-generator">
+      📋 No-Code Form Generator
+    </a>
+    <button class="navbar-toggler" type="button" (click)="toggleMenu()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div [class.collapse]="!menuOpen" class="navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/form-generator/builder']" routerLinkActive="active">
+            🛠️ Builder
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/form-generator/viewer']" routerLinkActive="active">
+            👁️ Viewer
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<router-outlet></router-outlet>

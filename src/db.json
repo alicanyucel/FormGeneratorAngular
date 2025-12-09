@@ -1,0 +1,7 @@
+{
+  "type": "text",
+  "label": "Ad",
+  "name": "fullName",
+  "required": true
+}
+

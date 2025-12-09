@@ -1,0 +1,204 @@
+<div class="container mt-5">
+  <div class="row">
+    <!-- Form List -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Your Forms</h5>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-success btn-sm mb-3 w-100" (click)="isCreatingForm = true">
+            + New Form
+          </button>
+
+          <div *ngIf="isCreatingForm" class="alert alert-info p-2">
+            <input type="text" class="form-control form-control-sm mb-2" placeholder="Form Name"
+              [(ngModel)]="newFormData.name">
+            <input type="text" class="form-control form-control-sm mb-2" placeholder="Form Title"
+              [(ngModel)]="newFormData.title">
+            <textarea class="form-control form-control-sm mb-2" placeholder="Description" rows="2"
+              [(ngModel)]="newFormData.description"></textarea>
+            <button class="btn btn-sm btn-success me-2" (click)="createNewForm()">Create</button>
+            <button class="btn btn-sm btn-secondary" (click)="isCreatingForm = false">Cancel</button>
+          </div>
+
+          <div class="list-group">
+            <button *ngFor="let form of forms"
+              class="list-group-item list-group-item-action"
+              [class.active]="currentForm?.id === form.id"
+              (click)="loadForm(form)">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">{{ form.name }}</h6>
+                  <small class="text-muted">{{ form.fields.length }} fields</small>
+                </div>
+                <button class="btn btn-sm btn-danger" (click)="deleteForm(form.id); $event.stopPropagation()">
+                  ✕
+                </button>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Builder -->
+    <div class="col-md-8" *ngIf="currentForm">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">{{ currentForm.title }} - Builder</h5>
+        </div>
+        <div class="card-body">
+          <!-- Form Settings -->
+          <div class="mb-4">
+            <h6>Form Settings</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <label class="form-label">Form Title</label>
+                <input type="text" class="form-control" [(ngModel)]="currentForm.title">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Submit Button Text</label>
+                <input type="text" class="form-control" [(ngModel)]="currentForm.submitButtonText">
+              </div>
+              <div class="col-12 mt-2">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" rows="2" [(ngModel)]="currentForm.description"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <hr>
+
+          <!-- Fields Section -->
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6>Form Fields</h6>
+              <button class="btn btn-primary btn-sm" (click)="addNewField()">+ Add Field</button>
+            </div>
+
+            <!-- Field List -->
+            <div class="field-list" *ngIf="currentForm.fields.length > 0">
+              <div *ngFor="let field of currentForm.fields; let i = index" class="field-item card mb-2 p-3">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="flex-grow-1">
+                    <strong>{{ field.label }}</strong>
+                    <small class="d-block text-muted">{{ field.type }}
+                      <span *ngIf="field.required" class="badge bg-danger">Required</span>
+                    </small>
+                  </div>
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-info" (click)="moveFieldUp(i)" [disabled]="i === 0" title="Move Up">↑</button>
+                    <button class="btn btn-sm btn-info" (click)="moveFieldDown(i)" [disabled]="i === currentForm.fields.length - 1" title="Move Down">↓</button>
+                    <button class="btn btn-sm btn-warning" (click)="editField(field, i)">Edit</button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteField(i)">Delete</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="currentForm.fields.length === 0" class="alert alert-secondary">
+              No fields added yet. Click "Add Field" to start building your form.
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-flex gap-2">
+            <button class="btn btn-success" (click)="saveCurrentForm()">💾 Save Form</button>
+            <button class="btn btn-info" (click)="exportForm()">📥 Export as JSON</button>
+            <label class="btn btn-warning">
+              📤 Import from JSON
+              <input type="file" accept=".json" (change)="importForm($event)" hidden>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8" *ngIf="!currentForm" class="mt-4">
+      <div class="alert alert-secondary text-center">
+        <h5>Select a form or create a new one to start building</h5>
+      </div>
+    </div>
+  </div>
+
+  <!-- Field Editor Modal -->
+  <div class="modal show" [class.d-block]="showFieldEditor" [class.d-none]="!showFieldEditor"
+    [style.display]="showFieldEditor ? 'block' : 'none'" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editingFieldIndex > -1 ? 'Edit' : 'Add' }} Field</h5>
+          <button type="button" class="btn-close" (click)="closeFieldEditor()"></button>
+        </div>
+        <div class="modal-body" *ngIf="selectedField">
+          <div class="mb-3">
+            <label class="form-label">Field Label *</label>
+            <input type="text" class="form-control" [(ngModel)]="selectedField.label" placeholder="e.g., Email Address">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Field Type</label>
+            <select class="form-select" [(ngModel)]="selectedField.type">
+              <option *ngFor="let type of fieldTypes" [value]="type">{{ type }}</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Placeholder</label>
+            <input type="text" class="form-control" [(ngModel)]="selectedField.placeholder"
+              placeholder="Enter placeholder text">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Help Text</label>
+            <input type="text" class="form-control" [(ngModel)]="selectedField.helpText"
+              placeholder="Additional help text for users">
+          </div>
+
+          <!-- Options for select/radio -->
+          <div *ngIf="selectedField.type === 'select' || selectedField.type === 'radio'" class="mb-3">
+            <label class="form-label">Options</label>
+            <div *ngFor="let option of selectedField.options; let i = index" class="input-group mb-2">
+              <input type="text" class="form-control" [(ngModel)]="selectedField.options![i]"
+                placeholder="Option value">
+              <button class="btn btn-danger" type="button" (click)="removeOption(i)">Remove</button>
+            </div>
+            <button class="btn btn-secondary btn-sm" (click)="addOption()">+ Add Option</button>
+          </div>
+
+          <!-- Length constraints -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Min Length</label>
+              <input type="number" class="form-control" [(ngModel)]="selectedField.minLength">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Max Length</label>
+              <input type="number" class="form-control" [(ngModel)]="selectedField.maxLength">
+            </div>
+          </div>
+
+          <!-- Required checkbox -->
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" [(ngModel)]="selectedField.required" id="requiredCheck">
+            <label class="form-check-label" for="requiredCheck">
+              Required Field
+            </label>
+          </div>
+
+          <!-- Validation -->
+          <div class="mb-3">
+            <label class="form-label">Validation Pattern (Regex)</label>
+            <input type="text" class="form-control" [(ngModel)]="selectedField.validation"
+              placeholder="e.g., ^[A-Z].*">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeFieldEditor()">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="saveField()">Save Field</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

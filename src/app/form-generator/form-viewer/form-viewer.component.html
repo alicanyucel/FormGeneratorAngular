@@ -1,0 +1,144 @@
+<div class="container mt-5">
+  <div class="row">
+    <!-- Form List -->
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Available Forms</h5>
+        </div>
+        <div class="card-body">
+          <div class="list-group">
+            <button *ngFor="let form of forms"
+              class="list-group-item list-group-item-action"
+              [class.active]="selectedForm?.id === form.id"
+              (click)="loadForm(form)">
+              <h6 class="mb-0">{{ form.title }}</h6>
+              <small class="text-muted">{{ form.fields.length }} fields</small>
+            </button>
+          </div>
+          <div *ngIf="forms.length === 0" class="alert alert-secondary mt-3 mb-0">
+            No forms available. Create one in the builder.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Viewer -->
+    <div class="col-md-9" *ngIf="selectedForm">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">{{ selectedForm.title }}</h5>
+          <p class="mb-0" *ngIf="selectedForm.description">
+            <small>{{ selectedForm.description }}</small>
+          </p>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <!-- Dynamic Fields -->
+            <div *ngFor="let field of selectedForm.fields" class="mb-4">
+              <label [for]="field.id" class="form-label">
+                {{ field.label }}
+                <span *ngIf="field.required" class="text-danger">*</span>
+              </label>
+
+              <!-- Text, Email, Password, Number Input -->
+              <input *ngIf="['text', 'email', 'password', 'number', 'date'].includes(field.type)"
+                [type]="field.type"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid(field.id)"
+                [id]="field.id"
+                [placeholder]="field.placeholder || ''"
+                [formControlName]="field.id"
+                [minlength]="field.minLength || null"
+                [maxlength]="field.maxLength || null">
+
+              <!-- Textarea -->
+              <textarea *ngIf="field.type === 'textarea'"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid(field.id)"
+                [id]="field.id"
+                [placeholder]="field.placeholder || ''"
+                [formControlName]="field.id"
+                rows="4"></textarea>
+
+              <!-- File Input -->
+              <input *ngIf="field.type === 'file'"
+                type="file"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid(field.id)"
+                [id]="field.id"
+                [formControlName]="field.id">
+
+              <!-- Checkbox -->
+              <div *ngIf="field.type === 'checkbox'" class="form-check">
+                <input type="checkbox"
+                  class="form-check-input"
+                  [class.is-invalid]="isFieldInvalid(field.id)"
+                  [id]="field.id"
+                  [formControlName]="field.id">
+              </div>
+
+              <!-- Radio Buttons -->
+              <div *ngIf="field.type === 'radio'" class="form-check">
+                <div *ngFor="let option of field.options" class="form-check">
+                  <input type="radio"
+                    class="form-check-input"
+                    [id]="field.id + '_' + option"
+                    [value]="option"
+                    [formControlName]="field.id">
+                  <label class="form-check-label" [for]="field.id + '_' + option">
+                    {{ option }}
+                  </label>
+                </div>
+              </div>
+
+              <!-- Select Dropdown -->
+              <select *ngIf="field.type === 'select'"
+                class="form-select"
+                [class.is-invalid]="isFieldInvalid(field.id)"
+                [id]="field.id"
+                [formControlName]="field.id">
+                <option value="">-- Select {{ field.label }} --</option>
+                <option *ngFor="let option of field.options" [value]="option">
+                  {{ option }}
+                </option>
+              </select>
+
+              <!-- Help Text -->
+              <small *ngIf="field.helpText" class="form-text text-muted d-block mt-2">
+                {{ field.helpText }}
+              </small>
+
+              <!-- Error Message -->
+              <div *ngIf="isFieldInvalid(field.id)" class="invalid-feedback d-block">
+                {{ getFieldError(field.id) }}
+              </div>
+            </div>
+
+            <!-- Submission Data (if submitted) -->
+            <div *ngIf="submissionData" class="alert alert-success mt-4">
+              <h5>Form Data Submitted</h5>
+              <pre>{{ submissionData | json }}</pre>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">
+                {{ selectedForm.submitButtonText }}
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="reset()">
+                Reset
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-9" *ngIf="!selectedForm">
+      <div class="alert alert-secondary text-center mt-4">
+        <h5>Select a form to view and fill it</h5>
+      </div>
+    </div>
+  </div>
+</div>
